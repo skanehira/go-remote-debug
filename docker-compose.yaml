@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    # dlvをヘッドレスで起動する場合
+    # SIGINTで終了できないため強制終了させる
+    stop_signal: SIGKILL
+    ports:
+      - "8080:8080"
+      - "${DEBUG_PORT:-9998}:${DEBUG_PORT:-9998}"
+    volumes:
+      - $PWD:/dev/go-remote-debug
+      - type: volume
+        source: go_module_cache
+        target: /go/pkg/mod
+    working_dir: /dev/go-remote-debug
+    environment:
+      - "DEBUG=${DEBUG:-}"
+      - "DEBUG_PORT=${DEBUG_PORT:-9998}"
+
+volumes:
+  go_module_cache:
